@@ -333,8 +333,10 @@ namespace GeoJSON.Net.Tests.Feature
             var feature = new Net.Feature.Feature(new Point(new Position(12, 123)));
             Assert.DoesNotThrow(() =>
             {
-                equal1 = feature == feature;
-                equal2 = feature.Equals(feature);
+#pragma warning disable CS1718 // Comparison made to same variable
+				equal1 = feature == feature;
+#pragma warning restore CS1718 // Comparison made to same variable
+				equal2 = feature.Equals(feature);
             });
 
             Assert.IsTrue(equal1);

@@ -85,21 +85,18 @@ namespace GeoJSON.Net.Converters
         /// </exception>
         private static IGeometryObject ReadGeoJson(JObject value)
         {
-            JToken token;
+			if (!value.TryGetValue("type", StringComparison.OrdinalIgnoreCase, out var token))
+			{
+				throw new JsonReaderException("json must contain a \"type\" property");
+			}
 
-            if (!value.TryGetValue("type", StringComparison.OrdinalIgnoreCase, out token))
-            {
-                throw new JsonReaderException("json must contain a \"type\" property");
-            }
+			if (!Enum.TryParse(token.Value<string>(), true, out
+			GeoJSONObjectType geoJsonType))
+			{
+				throw new JsonReaderException("type must be a valid geojson geometry object type");
+			}
 
-            GeoJSONObjectType geoJsonType;
-
-            if (!Enum.TryParse(token.Value<string>(), true, out geoJsonType))
-            {
-                throw new JsonReaderException("type must be a valid geojson geometry object type");
-            }
-
-            switch (geoJsonType)
+			switch (geoJsonType)
             {
                 case GeoJSONObjectType.Point:
                     return value.ToObject<Point>();

@@ -52,13 +52,12 @@ namespace GeoJSON.Net.Converters
 
             var jObject = JObject.Load(reader);
 
-            JToken token;
-            if (!jObject.TryGetValue("type", StringComparison.OrdinalIgnoreCase, out token))
-            {
-                throw new JsonReaderException("CRS must have a \"type\" property");
-            }
+			if (!jObject.TryGetValue("type", StringComparison.OrdinalIgnoreCase, out var token))
+			{
+				throw new JsonReaderException("CRS must have a \"type\" property");
+			}
 
-            var crsType = token.Value<string>();
+			var crsType = token.Value<string>();
 
             if (string.Equals("name", crsType, StringComparison.OrdinalIgnoreCase))
             {
