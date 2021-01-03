@@ -25,7 +25,7 @@ namespace GeoJSON.Net.Converters
         /// </returns>
         public override bool CanConvert(Type objectType)
         {
-            return typeof(IEnumerable<IPosition>).IsAssignableFromType(objectType);
+            return typeof(IEnumerable<IPosition>).IsAssignableFrom(objectType);
         }
 
         /// <summary>

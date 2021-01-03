@@ -26,7 +26,7 @@ namespace GeoJSON.Net.Converters
         /// </returns>
         public override bool CanConvert(Type objectType)
         {
-            return typeof(IGeometryObject).IsAssignableFromType(objectType);
+            return typeof(IGeometryObject).IsAssignableFrom(objectType);
         }
 
         /// <summary>
@@ -94,21 +94,10 @@ namespace GeoJSON.Net.Converters
 
             GeoJSONObjectType geoJsonType;
 
-#if (NET35)
-            try
-            {
-                geoJsonType = (GeoJSONObjectType)Enum.Parse(typeof(GeoJSONObjectType), token.Value<string>(), true);
-            }
-            catch (Exception)
-            {
-                throw new JsonReaderException("Type must be a valid geojson object type");
-            }
-#else
             if (!Enum.TryParse(token.Value<string>(), true, out geoJsonType))
             {
                 throw new JsonReaderException("type must be a valid geojson geometry object type");
             }
-#endif
 
             switch (geoJsonType)
             {
