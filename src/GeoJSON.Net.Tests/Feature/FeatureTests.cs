@@ -190,26 +190,6 @@ namespace GeoJSON.Net.Tests.Feature
         }
 
         [Test]
-        public void Ctor_Can_Add_Properties_Using_Object()
-        {
-            var properties = new TestFeatureProperty
-            {
-                BooleanProperty = true,
-                DateTimeProperty = DateTime.Now,
-                DoubleProperty = 1.2345d,
-                EnumProperty = TestFeatureEnum.Value1,
-                IntProperty = -1,
-                StringProperty = "Hello, GeoJSON !"
-            };
-
-            Net.Feature.Feature feature = new Net.Feature.Feature(new Point(new Position(10, 10)), properties);
-
-            Assert.IsNotNull(feature.Properties);
-            Assert.IsTrue(feature.Properties.Count > 1);
-            Assert.AreEqual(feature.Properties.Count, 6);
-        }
-
-        [Test]
         public void Ctor_Can_Add_Properties_Using_Object_Inheriting_Dictionary()
         {
             int expectedProperties = 6;
@@ -237,42 +217,10 @@ namespace GeoJSON.Net.Tests.Feature
         [Test]
         public void Ctor_Creates_Properties_Collection_When_Passed_Null_Proper_Object()
         {
-            Net.Feature.Feature feature = new Net.Feature.Feature(new Point(new Position(10, 10)), (object)null);
+            Net.Feature.Feature feature = new Net.Feature.Feature(new Point(new Position(10, 10)), null);
 
             Assert.IsNotNull(feature.Properties);
             CollectionAssert.IsEmpty(feature.Properties);
-        }
-
-        [Test]
-        public void Feature_Equals_GetHashCode_Contract_Properties_Of_Objects()
-        {
-            // order of keys should not matter
-
-            var leftProp = new TestFeatureProperty
-            {
-                StringProperty = "Hello, GeoJSON !",
-                EnumProperty = TestFeatureEnum.Value1,
-                IntProperty = -1,
-                BooleanProperty = true,
-                DateTimeProperty = DateTime.Now,
-                DoubleProperty = 1.2345d
-            };
-
-            var left = new Net.Feature.Feature(new Point(new Position(10, 10)), leftProp);
-
-            var rightProp = new TestFeatureProperty
-            {
-                BooleanProperty = true,
-                DateTimeProperty = DateTime.Now,
-                DoubleProperty = 1.2345d,
-                EnumProperty = TestFeatureEnum.Value1,
-                IntProperty = -1,
-                StringProperty = "Hello, GeoJSON !"
-            };
-
-            var right = new Net.Feature.Feature(new Point(new Position(10, 10)), rightProp);
-
-            Assert_Are_Equal(left, right);
         }
 
         [Test]
@@ -333,16 +281,6 @@ namespace GeoJSON.Net.Tests.Feature
             right = JsonConvert.DeserializeObject<Net.Feature.Feature>(rightJson);
 
             Assert_Are_Equal(left, right); // assert properties doesn't influence comparison and hashcode
-
-            leftFeature = new Net.Feature.Feature(geometry, null, "abc_abc");
-            leftJson = JsonConvert.SerializeObject(leftFeature);
-            left = JsonConvert.DeserializeObject<Net.Feature.Feature>(leftJson);
-
-            rightFeature = new Net.Feature.Feature(geometry, null, "xyz_XYZ");
-            rightJson = JsonConvert.SerializeObject(rightFeature);
-            right = JsonConvert.DeserializeObject<Net.Feature.Feature>(rightJson);
-
-            Assert_Are_Equal(left, right); // assert id's doesn't influence comparison and hashcode
 
             leftFeature = new Net.Feature.Feature(geometry, GetPropertiesInRandomOrder(), "abc");
             leftJson = JsonConvert.SerializeObject(leftFeature);
@@ -506,6 +444,26 @@ namespace GeoJSON.Net.Tests.Feature
         }
 
         private void Assert_Are_Equal(Net.Feature.Feature left, Net.Feature.Feature right)
+        {
+            Assert.AreEqual(left, right);
+
+            Assert.IsTrue(left.Equals(right));
+            Assert.IsTrue(right.Equals(left));
+
+            Assert.IsTrue(left.Equals(left));
+            Assert.IsTrue(right.Equals(right));
+
+            Assert.IsTrue(left == right);
+            Assert.IsTrue(right == left);
+
+            Assert.IsFalse(left != right);
+            Assert.IsFalse(right != left);
+
+            Assert.AreEqual(left.GetHashCode(), right.GetHashCode());
+        }
+
+        private void Assert_Are_Equal<TGeometry, TProps>(Net.Feature.Feature<TGeometry, TProps> left, Net.Feature.Feature<TGeometry, TProps> right)
+            where TGeometry : IGeometryObject
         {
             Assert.AreEqual(left, right);
 

@@ -35,6 +35,28 @@ namespace GeoJSON.Net.Tests.Feature
         }
 
         [Test]
+        public void Can_Deserialize_StrongTyped()
+        {
+            string json = GetExpectedJson();
+
+            var featureCollection = JsonConvert.DeserializeObject<FeatureCollection<TestFeatureProperty>>(json);
+
+            Assert.IsNotNull(featureCollection.Features);
+            Assert.AreEqual(featureCollection.Features.Count, 3);
+            Assert.AreEqual(featureCollection.Features.Count(x => x.Geometry.Type == GeoJSONObjectType.Point), 1);
+            Assert.AreEqual(featureCollection.Features.Count(x => x.Geometry.Type == GeoJSONObjectType.MultiPolygon), 1);
+            Assert.AreEqual(featureCollection.Features.Count(x => x.Geometry.Type == GeoJSONObjectType.Polygon), 1);
+
+            Assert.AreEqual(featureCollection.Features[0].Properties.StringProperty, "value0");
+
+            Assert.Null(featureCollection.Features[1].Properties.StringProperty);
+            Assert.AreEqual(featureCollection.Features[1].Properties.IntProperty, 5);
+            
+            Assert.AreEqual(featureCollection.Features[2].Properties.BooleanProperty, true);
+            Assert.AreEqual(featureCollection.Features[2].Properties.EnumProperty, TestFeatureEnum.Value1);
+        }
+
+        [Test]
         public void FeatureCollectionSerialization()
         {
             var model = new FeatureCollection();
